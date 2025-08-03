@@ -58,6 +58,8 @@ class CameraAnalysisSuccess extends CameraAnalysisState {
   final bool personDetected;
   final DateTime? personDetectionStart;
   final double personProgress; // 0.0 to 1.0 over 60 minutes
+  final int photosAnalyzed;
+  final int totalPhotosCaptured;
 
   const CameraAnalysisSuccess({
     required this.capturedImages,
@@ -67,6 +69,8 @@ class CameraAnalysisSuccess extends CameraAnalysisState {
     this.personDetected = false,
     this.personDetectionStart,
     this.personProgress = 0.0,
+    this.photosAnalyzed = 0,
+    this.totalPhotosCaptured = 0,
   });
 
   @override
@@ -78,6 +82,8 @@ class CameraAnalysisSuccess extends CameraAnalysisState {
         personDetected,
         personDetectionStart,
         personProgress,
+        photosAnalyzed,
+        totalPhotosCaptured,
       ];
 
   CameraAnalysisSuccess copyWith({
@@ -88,6 +94,8 @@ class CameraAnalysisSuccess extends CameraAnalysisState {
     bool? personDetected,
     DateTime? personDetectionStart,
     double? personProgress,
+    int? photosAnalyzed,
+    int? totalPhotosCaptured,
   }) {
     return CameraAnalysisSuccess(
       capturedImages: capturedImages ?? this.capturedImages,
@@ -97,6 +105,8 @@ class CameraAnalysisSuccess extends CameraAnalysisState {
       personDetected: personDetected ?? this.personDetected,
       personDetectionStart: personDetectionStart ?? this.personDetectionStart,
       personProgress: personProgress ?? this.personProgress,
+      photosAnalyzed: photosAnalyzed ?? this.photosAnalyzed,
+      totalPhotosCaptured: totalPhotosCaptured ?? this.totalPhotosCaptured,
     );
   }
 }
@@ -136,6 +146,7 @@ class CameraAnalysisCubit extends Cubit<CameraAnalysisState> {
 
       emit(currentState.copyWith(
         capturedImages: updatedImages,
+        totalPhotosCaptured: currentState.totalPhotosCaptured + 1,
       ));
 
       // Automatically analyze the new image
@@ -144,6 +155,7 @@ class CameraAnalysisCubit extends Cubit<CameraAnalysisState> {
       emit(CameraAnalysisSuccess(
         capturedImages: [imagePath],
         animationVariables: _getDefaultAnimationVariables(),
+        totalPhotosCaptured: 1,
       ));
       _analyzeImage(imagePath);
     }
@@ -247,6 +259,7 @@ class CameraAnalysisCubit extends Cubit<CameraAnalysisState> {
         personDetected: personDetected,
         personDetectionStart: personDetectionStart,
         personProgress: personProgress,
+        photosAnalyzed: currentState.photosAnalyzed + 1,
       ));
     } catch (e) {
       emit(CameraAnalysisError(message: e.toString()));

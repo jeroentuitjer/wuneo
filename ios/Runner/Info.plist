@@ -30,6 +30,10 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to capture images for AI vision analysis.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location access to provide accurate weather information for your current location.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs location access to provide accurate weather information for your current location.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

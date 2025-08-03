@@ -17,24 +17,47 @@ class _WeatherAnimatorState extends State<WeatherAnimator>
   WeatherData? _currentWeather;
   String _weatherAscii = '';
   int _frameIndex = 0;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    // Optimized animation duration for smoother performance
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 3000),
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
 
-    // Update weather display every 5 minutes
-    _updateTimer = Timer.periodic(const Duration(minutes: 5), (timer) {
+    // Initialize weather service if not already initialized
+    _initializeWeatherService();
+
+    // Reduced update frequency for better performance
+    _updateTimer = Timer.periodic(const Duration(seconds: 45), (timer) {
       _updateWeatherDisplay();
     });
 
-    // Initial weather update
-    _updateWeatherDisplay();
+    // Initial weather update after a short delay to allow service to initialize
+    Timer(const Duration(milliseconds: 500), () {
+      _updateWeatherDisplay();
+    });
 
     _animationController.repeat();
+  }
+
+  Future<void> _initializeWeatherService() async {
+    if (!_isInitialized) {
+      try {
+        await WeatherService.initialize();
+        setState(() {
+          _isInitialized = true;
+        });
+      } catch (e) {
+        print('Failed to initialize weather service: $e');
+        setState(() {
+          _isInitialized = true; // Mark as initialized even if failed
+        });
+      }
+    }
   }
 
   @override
@@ -51,6 +74,17 @@ class _WeatherAnimatorState extends State<WeatherAnimator>
         _currentWeather = weather;
         _weatherAscii = WeatherService.getWeatherAscii(weather.condition);
       });
+    } else if (_isInitialized) {
+      // If service is initialized but no weather data, trigger an update
+      setState(() {
+        _weatherAscii = '''
+    \\  /     NO DATA
+     \\/       
+      /\\      
+     /  \\     
+    /    \\    
+''';
+      });
     }
   }
 
@@ -59,7 +93,7 @@ class _WeatherAnimatorState extends State<WeatherAnimator>
     if (_currentWeather == null) {
       return '''
     \\  /     LOADING...
-     \\/       ⏳
+     \\/       
       /\\      
      /  \\     
     /    \\    
@@ -72,43 +106,37 @@ class _WeatherAnimatorState extends State<WeatherAnimator>
     for (int i = 0; i < lines.length; i++) {
       String line = lines[i];
 
-      // Add subtle animation based on weather condition
+      // Simplified animation based on weather condition for better performance
       switch (_currentWeather!.condition) {
         case WeatherCondition.rainy:
         case WeatherCondition.stormy:
-          // Animate rain drops
+          // Simplified rain animation
           if (line.contains('|')) {
-            final frame = _frameIndex % 2;
+            final frame = _frameIndex % 3;
             line = line.replaceAll('|', frame == 0 ? '|' : ' ');
           }
           break;
         case WeatherCondition.snowy:
-          // Animate snow flakes
+          // Simplified snow animation
           if (line.contains('*')) {
-            final frame = _frameIndex % 3;
-            line = line.replaceAll(
-                '*',
-                frame == 0
-                    ? '*'
-                    : frame == 1
-                        ? '·'
-                        : ' ');
+            final frame = _frameIndex % 4;
+            line = line.replaceAll('*', frame == 0 ? '*' : ' ');
           }
           break;
         case WeatherCondition.foggy:
-          // Animate fog
+          // Simplified fog animation
           if (line.contains('█')) {
-            final frame = _frameIndex % 2;
+            final frame = _frameIndex % 3;
             line = line.replaceAll('█', frame == 0 ? '█' : '░');
           }
           break;
         case WeatherCondition.cloudy:
-          // Animate clouds
+          // Simplified cloud animation
           if (line.contains('(') || line.contains(')')) {
-            final frame = _frameIndex % 4;
+            final frame = _frameIndex % 6;
             if (frame == 0) {
               line = line.replaceAll('(', '[').replaceAll(')', ']');
-            } else if (frame == 2) {
+            } else if (frame == 3) {
               line = line.replaceAll('[', '(').replaceAll(']', ')');
             }
           }
@@ -129,7 +157,8 @@ class _WeatherAnimatorState extends State<WeatherAnimator>
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
-        _frameIndex = (_animationController.value * 10).round();
+        // Optimized frame calculation for smoother animation
+        _frameIndex = (_animationController.value * 8).round();
 
         return Container(
           width: double.infinity,
