@@ -13,6 +13,12 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> {
   int? selectedOption;
 
+  @override
+  void initState() {
+    super.initState();
+    // Add any initialization here if needed
+  }
+
   void _selectOption(int option) {
     setState(() {
       selectedOption = option;

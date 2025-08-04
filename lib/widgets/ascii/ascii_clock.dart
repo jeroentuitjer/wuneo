@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/material.dart';
 import 'dart:async';
 
 class AsciiClock extends StatefulWidget {
@@ -11,22 +11,28 @@ class AsciiClock extends StatefulWidget {
 
 class _AsciiClockState extends State<AsciiClock> {
   late DateTime _now;
-  late Timer _timer;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _now = DateTime.now();
+    _startTimer();
+  }
+
+  void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _now = DateTime.now();
-      });
+      if (mounted) {
+        setState(() {
+          _now = DateTime.now();
+        });
+      }
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -128,17 +134,30 @@ class _AsciiClockState extends State<AsciiClock> {
 
   @override
   Widget build(BuildContext context) {
-    final timeStr =
-        _now.toLocal().toIso8601String().substring(11, 19); // HH:mm:ss
-    final asciiTime = _asciiDigits(timeStr.substring(0, 8));
+    try {
+      final timeStr =
+          _now.toLocal().toIso8601String().substring(11, 19); // HH:mm:ss
+      final asciiTime = _asciiDigits(timeStr.substring(0, 8));
 
-    return Text(
-      asciiTime,
-      style: GoogleFonts.pressStart2p(
-        color: Colors.greenAccent,
-        fontSize: 8,
-        height: 1.1,
-      ),
-    );
+      return Text(
+        asciiTime,
+        style: TextStyle(
+          color: Colors.greenAccent,
+          fontSize: 8,
+          height: 1.1,
+          fontFamily: 'monospace',
+        ),
+      );
+    } catch (e) {
+      // Fallback if clock fails
+      return Text(
+        'CLOCK ERROR',
+        style: TextStyle(
+          color: Colors.red,
+          fontSize: 8,
+          fontFamily: 'monospace',
+        ),
+      );
+    }
   }
 }
