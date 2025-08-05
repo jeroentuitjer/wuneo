@@ -100,6 +100,53 @@ class _AirpodsRadarState extends State<AirpodsRadar>
                     fontFamily: 'monospace',
                   ),
                 ),
+                const SizedBox(height: 8),
+                // Terminal-style log of seen devices
+                Container(
+                  width: 200,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.9),
+                    border:
+                        Border.all(color: Colors.greenAccent.withOpacity(0.5)),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'DEVICE LOG:',
+                          style: TextStyle(
+                            color: Colors.greenAccent,
+                            fontSize: 10,
+                            fontFamily: 'monospace',
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        ..._seenDevices.take(8).map((deviceName) => Text(
+                              '> $deviceName',
+                              style: TextStyle(
+                                color: Colors.greenAccent.withOpacity(0.8),
+                                fontSize: 9,
+                                fontFamily: 'monospace',
+                              ),
+                            )),
+                        if (_seenDevices.length > 8)
+                          Text(
+                            '> ... +${_seenDevices.length - 8} more',
+                            style: TextStyle(
+                              color: Colors.greenAccent.withOpacity(0.6),
+                              fontSize: 9,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
