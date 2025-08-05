@@ -29,7 +29,7 @@ class _MenuPageState extends State<MenuPage> {
     if (selectedOption != null) {
       switch (selectedOption) {
         case 1:
-          print('Start Program selected');
+          print('AirPod Radar selected');
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -46,6 +46,12 @@ class _MenuPageState extends State<MenuPage> {
       }
     }
   }
+
+  final List<String> _options = [
+    'AirPod Radar',
+    'Settings',
+    'Exit',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +78,7 @@ class _MenuPageState extends State<MenuPage> {
               GestureDetector(
                 onTap: () => _selectOption(1),
                 child: Text(
-                  '1. Start Program',
+                  '1. AirPod Radar',
                   style: GoogleFonts.pressStart2p(
                     color:
                         selectedOption == 1 ? Colors.green : Colors.grey[400],
